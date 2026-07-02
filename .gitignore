@@ -1,0 +1,59 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Build
+dist/
+build/
+
+# Python Packaging
+*.egg-info/
+
+# Database
+*.db
+
+# Uploads
+backend/storage/uploads/*
+backend/storage/processed/*
+
+# Node
+frontend/node_modules/
+
+# React Build
+frontend/dist/
+
+# Misc
+.cache/

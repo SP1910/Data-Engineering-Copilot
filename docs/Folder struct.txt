@@ -1,0 +1,52 @@
+backend/
+│
+├── app/
+│   ├── api/
+│   │   ├── v1/
+│   │   │   ├── endpoints/
+│   │   │   │   └── health.py
+│   │   │   └── router.py
+│   │   └── root.py
+│   │
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── logger.py
+│   │   └── lifespan.py
+│   │
+│   ├── middleware/
+│   │   └── request_logging.py
+│   │
+│   ├── services/
+│   │
+│   ├── repositories/
+│   │
+│   ├── models/
+│   │
+│   ├── schemas/
+│   │
+│   ├── dependencies/
+│   │
+│   ├── db/
+│   │
+│   ├── storage/
+│   │
+│   ├── ai/
+│   │
+│   ├── workers/
+│   │
+│   ├── utils/
+│   │
+│   └── main.py
+│
+├── storage/
+│   ├── uploads/
+│   └── processed/
+│
+├── tests/
+│
+├── .env
+├── .env.example
+├── requirements.txt
+├── pyproject.toml
+├── README.md
+└── .gitignore

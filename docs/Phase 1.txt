@@ -1,0 +1,47 @@
+m1
+
+Setup
+Frontend
+
+Backend
+
+Database
+
+Git
+
+README
+
+Environment Variables
+
+Docker placeholders
+
+
+m2
+Front end skeleton
+
+Navigation
+
+Routing
+
+Layout
+
+Theme
+
+Reusable UI components
+
+
+m3
+Backend skeleton
+FastAPI
+
+Routing
+
+Configuration
+
+Logging
+
+Exception handling
+
+Dependency Injection
+
+Health endpoint
