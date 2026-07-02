@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.root import api_router
+from app.api.router import api_router
 from app.core.config import settings
 from app.core.lifespan import lifespan
 
