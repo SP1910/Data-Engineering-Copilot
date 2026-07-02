@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.core.config import settings
 from app.schemas.health import HealthResponse
+from app.services.health_service import HealthService
 
 router = APIRouter()
 
@@ -13,12 +13,7 @@ router = APIRouter()
 )
 async def health_check() -> HealthResponse:
     """
-    Returns the current health status of the application.
+    Returns the current health status.
     """
 
-    return HealthResponse(
-        status="healthy",
-        application=settings.app_name,
-        version=settings.app_version,
-        environment=settings.environment,
-    )
+    return HealthService.get_health_status()
