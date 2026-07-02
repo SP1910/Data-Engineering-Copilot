@@ -3,6 +3,8 @@ from fastapi import UploadFile
 from app.schemas.dataset import DatasetUploadResponse
 from app.services.storage_service import StorageService
 
+from fastapi import HTTPException, status
+
 
 class DatasetService:
     """
@@ -37,13 +39,22 @@ class DatasetService:
         """
 
         if file.filename is None:
-            raise ValueError("Filename is missing.")
+            # raise ValueError("Filename is missing.")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Filename is missing.",
+            )
 
         extension = file.filename.lower().split(".")[-1]
 
         extension = f".{extension}"
 
         if extension not in self.ALLOWED_EXTENSIONS:
-            raise ValueError(
-                "Only CSV files are supported."
+            # raise ValueError(
+            #     "Only CSV files are supported."
+            # )
+
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only CSV files are supported.",
             )

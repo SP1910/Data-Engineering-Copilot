@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
 
     port: int = 8000
-
+    API_V1_STR: str = "/api/v1"
     UPLOAD_DIR: str = "uploads"
 
     model_config = SettingsConfigDict(
