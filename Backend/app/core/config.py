@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     Application configuration loaded from environment variables.
     """
 
-    app_name: str = "AI Data Engineering Copilot"
+    app_name: str = "Data Engineering Copilot"
     app_version: str = "0.1.0"
 
     environment: str = "development"
