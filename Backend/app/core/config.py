@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     port: int = 8000
 
+    UPLOAD_DIR: str = "uploads"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,

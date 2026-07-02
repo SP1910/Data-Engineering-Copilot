@@ -3,12 +3,14 @@ from fastapi import FastAPI
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.lifespan import lifespan
+from app.core.storage import initialize_storage
 
 
 def create_application() -> FastAPI:
     """
     Create and configure the FastAPI application.
     """
+    initialize_storage()    #initailize storage before application starts accept requests
 
     application = FastAPI(
         title=settings.app_name,
