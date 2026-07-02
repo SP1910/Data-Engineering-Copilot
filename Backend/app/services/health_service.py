@@ -7,8 +7,7 @@ class HealthService:
     Service responsible for health-related operations.
     """
 
-    @staticmethod
-    def get_health_status() -> HealthResponse:
+    def get_health_status(self) -> HealthResponse:
         """
         Return the application's health information.
         """
