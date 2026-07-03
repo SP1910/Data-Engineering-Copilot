@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import URL
 
 
 class Settings(BaseSettings):
@@ -42,20 +43,18 @@ class Settings(BaseSettings):
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "password"
 
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
-        """
-        Returns the SQLAlchemy database connection URL.
-        """
-        return (
-            f"postgresql+psycopg2://"
-            f"{self.DATABASE_USER}:"
-            f"{self.DATABASE_PASSWORD}@"
-            f"{self.DATABASE_HOST}:"
-            f"{self.DATABASE_PORT}/"
-            f"{self.DATABASE_NAME}"
-        )
+        return URL.create(
+            drivername="postgresql+psycopg2",
+            username=self.DATABASE_USER,
+            password=self.DATABASE_PASSWORD,
+            host=self.DATABASE_HOST,
+            port=self.DATABASE_PORT,
+            database=self.DATABASE_NAME,
+        ).render_as_string(hide_password=False)
 
     model_config = SettingsConfigDict(
         env_file=".env",
