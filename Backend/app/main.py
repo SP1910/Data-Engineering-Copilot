@@ -24,10 +24,10 @@ def create_application() -> FastAPI:
     )
 
     application.include_router(api_router)
-    application.include_router(
-        datasets.router,
-        prefix=settings.API_V1_STR,
-    )
+    # application.include_router(
+    #     datasets.router,
+    #     prefix=settings.API_V1_STR,
+    # )
 
     return application
 
