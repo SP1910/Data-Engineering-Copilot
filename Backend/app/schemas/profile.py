@@ -21,6 +21,7 @@ class DataQualityProfile(BaseModel):
     unique_values: int
     is_constant: bool
     is_identifier: bool
+    is_high_cardinality: bool
 
 
 class NumericStatistics(BaseModel):

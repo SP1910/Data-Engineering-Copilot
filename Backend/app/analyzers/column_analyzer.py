@@ -81,6 +81,7 @@ class ColumnAnalyzer:
             unique_values=unique_values,
             is_constant=self._is_constant_column(column),
             is_identifier=self._is_identifier(column, unique_values),
+            is_high_cardinality=self._is_high_cardinality(column, unique_values),
         )
 
         statistics = None
@@ -183,3 +184,13 @@ class ColumnAnalyzer:
             return False
         
         return unique_values == non_null_count
+    
+    def _is_high_cardinality(self, column:Series, unique_values:int)->bool:
+        non_null_count = int(column.count())
+        if(non_null_count == 0): return False
+
+        cardinality_ratio = unique_values/non_null_count
+        return (
+            unique_values>= 50
+            and cardinality_ratio>=0.5
+        )
