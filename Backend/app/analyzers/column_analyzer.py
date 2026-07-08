@@ -3,7 +3,7 @@ from pandas.api.types import (
     is_datetime64_any_dtype,
     is_numeric_dtype,
 )
-
+import pandas as pd
 from pandas import Series
 
 from app.schemas.profile import ColumnProfile
