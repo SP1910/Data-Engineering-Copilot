@@ -4,10 +4,6 @@ from pydantic import BaseModel
 
 
 class SemanticType(str, Enum):
-    """
-    Supported semantic data types.
-    """
-
     NUMERICAL = "numerical"
     CATEGORICAL = "categorical"
     BOOLEAN = "boolean"
@@ -15,9 +11,20 @@ class SemanticType(str, Enum):
     TEXT = "text"
 
 
+class DataQualityProfile(BaseModel):
+    """
+    Data quality metrics for a column.
+    """
+
+    missing_count: int
+    missing_percentage: float
+    unique_values: int
+    is_constant: bool
+    is_identifier: bool
+
+
 class NumericStatistics(BaseModel):
     count: int
-    unique_values: int
     mean: float
     median: float
     std: float
@@ -30,11 +37,9 @@ class NumericStatistics(BaseModel):
 class ColumnProfile(BaseModel):
     name: str
     pandas_dtype: str
-
     semantic_type: SemanticType
 
-    missing_count: int
-    missing_percentage: float
+    data_quality: DataQualityProfile
 
     statistics: NumericStatistics | None
 

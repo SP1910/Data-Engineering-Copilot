@@ -8,6 +8,7 @@ from pandas.api.types import (
 
 from app.schemas.profile import (
     ColumnProfile,
+    DataQualityProfile,
     NumericStatistics,
     SemanticType,
 )
@@ -26,9 +27,20 @@ class StatisticsAnalyzer:
 
         cleaned_column = column.dropna()
 
+        if cleaned_column.empty:
+            return NumericStatistics(
+                count=0,
+                mean=0.0,
+                median=0.0,
+                std=0.0,
+                minimum=0.0,
+                maximum=0.0,
+                q1=0.0,
+                q3=0.0,
+            )
+
         return NumericStatistics(
             count=int(cleaned_column.count()),
-            unique_values=int(cleaned_column.nunique()),
             mean=round(float(cleaned_column.mean()), 2),
             median=round(float(cleaned_column.median()), 2),
             std=round(float(cleaned_column.std()), 2),
@@ -61,6 +73,16 @@ class ColumnAnalyzer:
             missing_count,
         )
 
+        unique_values = self._calculate_unique_values(column)
+
+        data_quality = DataQualityProfile(
+            missing_count=missing_count,
+            missing_percentage=missing_percentage,
+            unique_values=unique_values,
+            is_constant=self._is_constant_column(column),
+            is_identifier=self._is_identifier(column, unique_values),
+        )
+
         statistics = None
 
         if semantic_type == SemanticType.NUMERICAL:
@@ -70,12 +92,11 @@ class ColumnAnalyzer:
             name=column.name,
             pandas_dtype=str(column.dtype),
             semantic_type=semantic_type,
-            missing_count=missing_count,
-            missing_percentage=missing_percentage,
+            data_quality=data_quality,
             statistics=statistics,
         )
 
-    def _infer_semantic_type(self, column: Series) -> str:
+    def _infer_semantic_type(self, column: Series) -> SemanticType:
         """
         Infer the semantic type of a dataframe column.
         """
@@ -91,7 +112,7 @@ class ColumnAnalyzer:
 
         return self._analyze_object_column(column)
 
-    def _analyze_object_column(self, column: Series) -> str:
+    def _analyze_object_column(self, column: Series) -> SemanticType:
         """
         Analyze object/string columns.
         """
@@ -138,3 +159,27 @@ class ColumnAnalyzer:
             return 0.0
 
         return round((missing_count / total_rows) * 100, 2)
+
+    def _calculate_unique_values(self, column: Series) -> int:
+        """
+        Calculate the number of unique non-null values.
+        """
+
+        return int(column.nunique(dropna=True))
+    
+    def _is_constant_column(self, column: Series) -> bool:
+        """
+        Determine whether a column contains only one unique
+        non-null value.
+        """
+
+        return column.nunique(dropna=True) <= 1
+    
+    def _is_identifier(self, column:Series, unique_values:int) -> bool:
+
+        non_null_count = int(column.count())
+
+        if(non_null_count<10):
+            return False
+        
+        return unique_values == non_null_count
