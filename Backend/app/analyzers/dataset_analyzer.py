@@ -1,6 +1,9 @@
 from pandas import DataFrame
 
-from app.schemas.profile import DatasetQualityProfile
+from app.schemas.profile import (
+    DatasetQualityProfile,
+    DuplicateColumnPair,
+)
 
 
 class DatasetAnalyzer:
@@ -20,9 +23,14 @@ class DatasetAnalyzer:
             duplicate_rows,
         )
 
+        duplicate_columns = self.analyze_duplicate_columns(
+            dataframe,
+        )
+
         return DatasetQualityProfile(
             duplicate_rows=duplicate_rows,
             duplicate_percentage=duplicate_percentage,
+            duplicate_columns=duplicate_columns,
         )
 
     def analyze_duplicate_rows(
@@ -30,7 +38,7 @@ class DatasetAnalyzer:
         dataframe: DataFrame,
     ) -> int:
         """
-        Count duplicate rows in the dataset.
+        Count duplicate rows.
         """
 
         return int(dataframe.duplicated().sum())
@@ -53,3 +61,33 @@ class DatasetAnalyzer:
             (duplicate_rows / total_rows) * 100,
             2,
         )
+
+    def analyze_duplicate_columns(
+        self,
+        dataframe: DataFrame,
+    ) -> list[DuplicateColumnPair]:
+        """
+        Find duplicate columns in the dataset.
+        """
+
+        duplicate_columns = []
+
+        columns = dataframe.columns
+
+        for i in range(len(columns)):
+            for j in range(i + 1, len(columns)):
+
+                first_column = columns[i]
+                second_column = columns[j]
+
+                if dataframe[first_column].equals(
+                    dataframe[second_column]
+                ):
+                    duplicate_columns.append(
+                        DuplicateColumnPair(
+                            original=first_column,
+                            duplicate=second_column,
+                        )
+                    )
+
+        return duplicate_columns

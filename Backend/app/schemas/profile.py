@@ -2,6 +2,14 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+class DuplicateColumnPair(BaseModel):
+    """
+    Represents a pair of duplicate columns.
+    """
+
+    original: str
+    duplicate: str
+
 
 class SemanticType(str, Enum):
     NUMERICAL = "numerical"
@@ -33,6 +41,8 @@ class DatasetQualityProfile(BaseModel):
 
     duplicate_rows: int
     duplicate_percentage: float
+
+    duplicate_columns: list[DuplicateColumnPair]
 
 
 class NumericStatistics(BaseModel):
