@@ -1,4 +1,18 @@
+from enum import Enum
+
 from pydantic import BaseModel
+
+
+class SemanticType(str, Enum):
+    """
+    Supported semantic data types.
+    """
+
+    NUMERICAL = "numerical"
+    CATEGORICAL = "categorical"
+    BOOLEAN = "boolean"
+    DATETIME = "datetime"
+    TEXT = "text"
 
 
 class NumericStatistics(BaseModel):
@@ -16,7 +30,8 @@ class NumericStatistics(BaseModel):
 class ColumnProfile(BaseModel):
     name: str
     pandas_dtype: str
-    semantic_type: str
+
+    semantic_type: SemanticType
 
     missing_count: int
     missing_percentage: float

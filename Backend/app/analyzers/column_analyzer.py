@@ -9,6 +9,7 @@ from pandas.api.types import (
 from app.schemas.profile import (
     ColumnProfile,
     NumericStatistics,
+    SemanticType,
 )
 
 
@@ -62,7 +63,7 @@ class ColumnAnalyzer:
 
         statistics = None
 
-        if semantic_type == "numerical":
+        if semantic_type == SemanticType.NUMERICAL:
             statistics = self.statistics_analyzer.analyze(column)
 
         return ColumnProfile(
@@ -80,13 +81,13 @@ class ColumnAnalyzer:
         """
 
         if is_bool_dtype(column):
-            return "boolean"
+            return SemanticType.BOOLEAN
 
         if is_numeric_dtype(column):
-            return "numerical"
+            return SemanticType.NUMERICAL
 
         if is_datetime64_any_dtype(column):
-            return "datetime"
+            return SemanticType.DATETIME
 
         return self._analyze_object_column(column)
 
@@ -98,7 +99,7 @@ class ColumnAnalyzer:
         non_null = column.dropna()
 
         if non_null.empty:
-            return "categorical"
+            return SemanticType.CATEGORICAL
 
         converted = pd.to_datetime(
             non_null,
@@ -106,14 +107,14 @@ class ColumnAnalyzer:
         )
 
         if converted.notna().all():
-            return "datetime"
+            return SemanticType.DATETIME
 
         average_length = non_null.astype(str).str.len().mean()
 
         if average_length > 50:
-            return "text"
+            return SemanticType.TEXT
 
-        return "categorical"
+        return SemanticType.CATEGORICAL
 
     def _calculate_missing_count(self, column: Series) -> int:
         """
