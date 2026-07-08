@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from pandas.errors import EmptyDataError, ParserError
 from sqlalchemy.orm import Session
 
+from app.analyzers.column_analyzer import ColumnAnalyzer
 from app.repositories.dataset_repository import DatasetRepository
 from app.schemas.profile import BasicDatasetProfile
 
@@ -17,13 +18,13 @@ class ProfilingService:
 
     def __init__(self, db: Session):
         self.repository = DatasetRepository(db)
+        self.column_analyzer = ColumnAnalyzer()
 
     def profile_dataset(self, dataset_id: int) -> BasicDatasetProfile:
         """
-        Load a dataset and generate a basic profile.
+        Generate a basic profile for a dataset.
         """
 
-        # Step 1: Fetch dataset metadata
         dataset = self.repository.get_by_id(dataset_id)
 
         if dataset is None:
@@ -32,7 +33,6 @@ class ProfilingService:
                 detail="Dataset not found.",
             )
 
-        # Step 2: Verify the file exists
         csv_path = Path(dataset.file_path)
 
         if not csv_path.exists():
@@ -41,7 +41,6 @@ class ProfilingService:
                 detail="Dataset file not found on disk.",
             )
 
-        # Step 3: Read the CSV
         try:
             dataframe = pd.read_csv(csv_path)
 
@@ -57,20 +56,21 @@ class ProfilingService:
                 detail="Invalid CSV format.",
             )
 
-        # Step 4: Extract basic information
         rows, columns = dataframe.shape
 
         memory_usage = int(
             dataframe.memory_usage(deep=True).sum()
         )
 
-        column_names = dataframe.columns.tolist()
+        column_profiles = [
+            self.column_analyzer.analyze(dataframe[column])
+            for column in dataframe.columns
+        ]
 
-        # Step 5: Return response schema
         return BasicDatasetProfile(
             dataset_name=dataset.original_filename,
             rows=rows,
             columns=columns,
             memory_usage_bytes=memory_usage,
-            column_names=column_names,
+            column_profiles=column_profiles,
         )
