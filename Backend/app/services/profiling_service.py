@@ -6,6 +6,7 @@ from pandas.errors import EmptyDataError, ParserError
 from sqlalchemy.orm import Session
 
 from app.analyzers.column_analyzer import ColumnAnalyzer
+from app.analyzers.dataset_analyzer import DatasetAnalyzer
 from app.repositories.dataset_repository import DatasetRepository
 from app.schemas.profile import BasicDatasetProfile
 
@@ -13,16 +14,17 @@ from app.schemas.profile import BasicDatasetProfile
 class ProfilingService:
     """
     Service responsible for loading datasets and generating
-    basic profiling information.
+    dataset profiling information.
     """
 
     def __init__(self, db: Session):
         self.repository = DatasetRepository(db)
         self.column_analyzer = ColumnAnalyzer()
+        self.dataset_analyzer = DatasetAnalyzer()
 
     def profile_dataset(self, dataset_id: int) -> BasicDatasetProfile:
         """
-        Generate a basic profile for a dataset.
+        Generate a complete profile for a dataset.
         """
 
         dataset = self.repository.get_by_id(dataset_id)
@@ -67,10 +69,13 @@ class ProfilingService:
             for column in dataframe.columns
         ]
 
+        dataset_quality = self.dataset_analyzer.analyze(dataframe)
+
         return BasicDatasetProfile(
             dataset_name=dataset.original_filename,
             rows=rows,
             columns=columns,
             memory_usage_bytes=memory_usage,
+            dataset_quality=dataset_quality,
             column_profiles=column_profiles,
         )

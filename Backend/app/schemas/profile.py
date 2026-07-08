@@ -13,24 +13,39 @@ class SemanticType(str, Enum):
 
 class DataQualityProfile(BaseModel):
     """
-    Data quality metrics for a column.
+    Data quality metrics for a single column.
     """
 
     missing_count: int
     missing_percentage: float
+
     unique_values: int
+
     is_constant: bool
     is_identifier: bool
     is_high_cardinality: bool
 
 
+class DatasetQualityProfile(BaseModel):
+    """
+    Dataset-level quality metrics.
+    """
+
+    duplicate_rows: int
+    duplicate_percentage: float
+
+
 class NumericStatistics(BaseModel):
     count: int
+
     mean: float
     median: float
+
     std: float
+
     minimum: float
     maximum: float
+
     q1: float
     q3: float
 
@@ -38,6 +53,7 @@ class NumericStatistics(BaseModel):
 class ColumnProfile(BaseModel):
     name: str
     pandas_dtype: str
+
     semantic_type: SemanticType
 
     data_quality: DataQualityProfile
@@ -47,8 +63,12 @@ class ColumnProfile(BaseModel):
 
 class BasicDatasetProfile(BaseModel):
     dataset_name: str
+
     rows: int
     columns: int
+
     memory_usage_bytes: int
+
+    dataset_quality: DatasetQualityProfile
 
     column_profiles: list[ColumnProfile]
