@@ -74,6 +74,9 @@ class ColumnAnalyzer:
         )
 
         unique_values = self._calculate_unique_values(column)
+        outlier_count, outlier_percentage = (
+            self._calculate_outliers(column, semantic_type)
+        )
 
         data_quality = DataQualityProfile(
             missing_count=missing_count,
@@ -82,6 +85,8 @@ class ColumnAnalyzer:
             is_constant=self._is_constant_column(column),
             is_identifier=self._is_identifier(column, unique_values),
             is_high_cardinality=self._is_high_cardinality(column, unique_values),
+            outlier_count=outlier_count,
+            outlier_percentage=outlier_percentage,
         )
 
         statistics = None
@@ -194,3 +199,43 @@ class ColumnAnalyzer:
             unique_values>= 50
             and cardinality_ratio>=0.5
         )
+    
+    def _calculate_outliers(
+        self,
+        column: Series,
+        semantic_type: SemanticType,
+    ) -> tuple[int, float]:
+        """
+        Detect outliers in a numerical column using
+        the IQR (Interquartile Range) method.
+        """
+
+        if semantic_type != SemanticType.NUMERICAL:
+            return 0, 0.0
+
+        cleaned_column = column.dropna()
+
+        if cleaned_column.empty:
+            return 0, 0.0
+
+        q1 = cleaned_column.quantile(0.25)
+        q3 = cleaned_column.quantile(0.75)
+
+        iqr = q3 - q1
+
+        lower_bound = q1 - (1.5 * iqr)
+        upper_bound = q3 + (1.5 * iqr)
+
+        outlier_count = int(
+            (
+                (cleaned_column < lower_bound)
+                | (cleaned_column > upper_bound)
+            ).sum()
+        )
+
+        outlier_percentage = round(
+            (outlier_count / len(cleaned_column)) * 100,
+            2,
+        )
+
+        return outlier_count, outlier_percentage

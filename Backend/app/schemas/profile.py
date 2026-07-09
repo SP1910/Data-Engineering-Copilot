@@ -43,6 +43,9 @@ class DataQualityProfile(BaseModel):
     is_constant: bool
     is_identifier: bool
     is_high_cardinality: bool
+    
+    outlier_count: int
+    outlier_percentage: float
 
 
 class DatasetQualityProfile(BaseModel):
