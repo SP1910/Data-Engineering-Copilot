@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "data_engineering_copilot"
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "password"
+    CORRELATION_THRESHOLD: float = 0.90
 
 
     @computed_field

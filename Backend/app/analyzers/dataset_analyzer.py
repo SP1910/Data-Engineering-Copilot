@@ -1,6 +1,8 @@
 from pandas import DataFrame
+from app.core.config import settings
 
 from app.schemas.profile import (
+    CorrelatedFeaturePair,
     DatasetQualityProfile,
     DuplicateColumnPair,
 )
@@ -27,10 +29,15 @@ class DatasetAnalyzer:
             dataframe,
         )
 
+        highly_correlated_features = self.analyze_correlations(
+            dataframe,
+        )
+
         return DatasetQualityProfile(
             duplicate_rows=duplicate_rows,
             duplicate_percentage=duplicate_percentage,
             duplicate_columns=duplicate_columns,
+            highly_correlated_features=highly_correlated_features,
         )
 
     def analyze_duplicate_rows(
@@ -91,3 +98,41 @@ class DatasetAnalyzer:
                     )
 
         return duplicate_columns
+    
+    def analyze_correlations(
+        self,
+        dataframe: DataFrame,
+    ) -> list[CorrelatedFeaturePair]:
+        """
+        Detect highly correlated numerical feature pairs.
+        """
+
+        numeric_dataframe = dataframe.select_dtypes(include="number")
+
+        if numeric_dataframe.shape[1] < 2:
+            return []
+
+        correlation_matrix = numeric_dataframe.corr()
+
+        correlated_features = []
+
+        columns = correlation_matrix.columns
+
+        threshold = settings.CORRELATION_THRESHOLD
+
+        for i in range(len(columns)):
+            for j in range(i + 1, len(columns)):
+
+                correlation = correlation_matrix.iloc[i, j]
+
+                if abs(correlation) >= threshold:
+
+                    correlated_features.append(
+                        CorrelatedFeaturePair(
+                            feature_1=columns[i],
+                            feature_2=columns[j],
+                            correlation=round(float(correlation), 2),
+                        )
+                    )
+
+        return correlated_features

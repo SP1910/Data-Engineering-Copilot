@@ -2,6 +2,17 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+
+class CorrelatedFeaturePair(BaseModel):
+    """
+    Represents a pair of highly correlated numerical features.
+    """
+
+    feature_1: str
+    feature_2: str
+    correlation: float
+
+
 class DuplicateColumnPair(BaseModel):
     """
     Represents a pair of duplicate columns.
@@ -43,6 +54,7 @@ class DatasetQualityProfile(BaseModel):
     duplicate_percentage: float
 
     duplicate_columns: list[DuplicateColumnPair]
+    highly_correlated_features: list[CorrelatedFeaturePair]
 
 
 class NumericStatistics(BaseModel):
